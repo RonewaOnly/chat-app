@@ -9,16 +9,16 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL,
-    methods: ['GET', 'POST'],
+    methods: ["GET","POST"],
   },
 });
 
 io.on('connection', (socket) => {
-  console.log('✅ Connected:', socket.id);
+  console.log('🔌 Connected:', socket.id);
 
-  socket.on('sendMessage', (message) => {
-    if (!message?.text) return;
-    io.emit('receiveMessage', message);
+  socket.on('sendMessage', (msg) => {
+    if (!msg?.text) return;
+    io.emit('receiveMessage', msg);
   });
 
   socket.on('disconnect', () => {
@@ -26,6 +26,5 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(process.env.PORT, () => {
-  console.log(`🚀 Backend running on port ${process.env.PORT}`);
-});
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => console.log(`🚀 Running on ${PORT}`));
