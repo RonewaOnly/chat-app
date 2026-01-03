@@ -1,28 +1,31 @@
 const express = require('express');
 const http = require('http');
-const {Server} = require('socket.io')
+const { Server } = require('socket.io');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-        }
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST'],
+  },
 });
 
-io.on('connection', (socket) =>{
-    console.log('A user connected:',socket.id);
+io.on('connection', (socket) => {
+  console.log('✅ Connected:', socket.id);
 
-    socket.on('sendMessage', (message)=>{
-        io.emit('receiveMessage',message);
-    });
+  socket.on('sendMessage', (message) => {
+    if (!message?.text) return;
+    io.emit('receiveMessage', message);
+  });
 
-    socket.on('disconnect', ()=>{
-        console.log('A user disconnected');
-    });
+  socket.on('disconnect', () => {
+    console.log('❌ Disconnected:', socket.id);
+  });
 });
 
-server.listen(5173,()=>{
-    console.log('Server is running on port 5173');
-})
+server.listen(process.env.PORT, () => {
+  console.log(`🚀 Backend running on port ${process.env.PORT}`);
+});
